@@ -59,13 +59,14 @@ public class EmployeeService {
         employee.setDeleteFlg(false);
 
         LocalDateTime now = LocalDateTime.now();
+        employee.setCreatedAt(now);
         employee.setUpdatedAt(now);
 
         employeeRepository.save(employee);
         return ErrorKinds.SUCCESS;
     }
-    
-    
+
+
 
     // 従業員削除
     @Transactional

@@ -1,5 +1,8 @@
 package com.techacademy.controller;
 
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -109,7 +112,7 @@ public class EmployeeController {
     // 従業員更新処理
     @PostMapping(value = "/update")
     public String update(@Validated Employee employee, BindingResult res, Model model) {
-        System.out.println("update start");
+
         // パスワード空白チェック
         /*
          * エンティティ側の入力チェックでも実装は行えるが、更新の方でパスワードが空白でもチェックエラーを出さずに
@@ -123,21 +126,22 @@ public class EmployeeController {
             return "employees/update";
 
         }
-        System.out.println("update start1");
+
+
         // 入力チェック
         if (res.hasErrors()) {
             return edit(employee.getCode(),employee,model);
         }
-        System.out.println("update start2");
+
         // 論理削除を行った従業員番号を指定すると例外となるためtry~catchで対応
         // (findByIdでは削除フラグがTRUEのデータが取得出来ないため)
         try {
             ErrorKinds result = employeeService.update(employee);
 
-            if (ErrorMessage.contains(result)) {
+        if (ErrorMessage.contains(result)) {
                 model.addAttribute(ErrorMessage.getErrorName(result), ErrorMessage.getErrorValue(result));
-                return edit(employee.getCode(),employee,model);
-            }
+            return edit(employee.getCode(),employee,model);
+        }
 
         } catch (DataIntegrityViolationException e) {
             model.addAttribute(ErrorMessage.getErrorName(ErrorKinds.DUPLICATE_EXCEPTION_ERROR),
@@ -145,8 +149,8 @@ public class EmployeeController {
             return edit(employee.getCode(),employee,model);
         }
 
-        return "redirect:/employees";
-    }
+            return "redirect:/employees";
+        }
 
 
     // 従業員削除処理
