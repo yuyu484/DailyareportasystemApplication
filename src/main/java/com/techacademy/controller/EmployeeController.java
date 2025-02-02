@@ -109,7 +109,7 @@ public class EmployeeController {
     // 従業員更新処理
     @PostMapping(value = "/update")
     public String update(@Validated Employee employee, BindingResult res, Model model) {
-
+        System.out.println("update start");
         // パスワード空白チェック
         /*
          * エンティティ側の入力チェックでも実装は行えるが、更新の方でパスワードが空白でもチェックエラーを出さずに
@@ -120,14 +120,15 @@ public class EmployeeController {
             model.addAttribute(ErrorMessage.getErrorName(ErrorKinds.BLANK_ERROR),
                     ErrorMessage.getErrorValue(ErrorKinds.BLANK_ERROR));
 
-        return "employees/update";
+            return "employees/update";
 
-    }
+        }
+        System.out.println("update start1");
         // 入力チェック
         if (res.hasErrors()) {
-            return create(employee);
+            return edit(employee.getCode(),employee,model);
         }
-
+        System.out.println("update start2");
         // 論理削除を行った従業員番号を指定すると例外となるためtry~catchで対応
         // (findByIdでは削除フラグがTRUEのデータが取得出来ないため)
         try {
@@ -135,13 +136,13 @@ public class EmployeeController {
 
             if (ErrorMessage.contains(result)) {
                 model.addAttribute(ErrorMessage.getErrorName(result), ErrorMessage.getErrorValue(result));
-                return create(employee);
+                return edit(employee.getCode(),employee,model);
             }
 
         } catch (DataIntegrityViolationException e) {
             model.addAttribute(ErrorMessage.getErrorName(ErrorKinds.DUPLICATE_EXCEPTION_ERROR),
                     ErrorMessage.getErrorValue(ErrorKinds.DUPLICATE_EXCEPTION_ERROR));
-            return create(employee);
+            return edit(employee.getCode(),employee,model);
         }
 
         return "redirect:/employees";
