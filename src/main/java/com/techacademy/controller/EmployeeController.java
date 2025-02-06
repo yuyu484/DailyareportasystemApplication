@@ -111,9 +111,16 @@ public class EmployeeController {
     public String update(@PathVariable("code") String code,@Validated Employee employee, BindingResult res, Model model) {
         // 入力チェック
         if (res.hasErrors()) {
+            model.addAttribute("employee",employee);
             return "employees/update";
-
         }
+        // employeeServiceの更新処理を呼び出し
+        ErrorKinds result = employeeService.update(employee);
+        if (ErrorMessage.contains(result)) {
+            model.addAttribute(ErrorMessage.getErrorName(result), ErrorMessage.getErrorValue(result));
+            return "employees/update";
+        }
+
         model.addAttribute("employee", employeeService.findByCode(code));
         if ("".equals(employee.getName())) {
             // 氏名が空白だった場合
