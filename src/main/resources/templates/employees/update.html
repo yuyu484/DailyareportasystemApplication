@@ -13,10 +13,13 @@
                     <div class="container-fluid p-0">
 
                         <h1 class="h3 mb-3">従業員 更新</h1>
-                        <p>パスワードは変更する場合のみ入力してください</p>
+                        <div class="card" style="width: 40rem;">
+                            <h2 class="card-header">
+                            パスワードは変更する場合のみ入力してください
+                            </h2>
+                        </div>
                     </div>
                     <div class="col-12 col-xxl-6">
-
                         <div class="col-xl-12">
                         <div class="card">
                         <div class="card-body">
@@ -26,9 +29,8 @@
                          <label class="form-label" for="code">社員番号</label>
                          <p class="mb-1"></p>
                         <div class="col-md-7">
-                        <input class="form-control" type="text" th:field="*{code}" th:errorclass="err" id="code" readonly / >
-                        <span th:errors="*{code}" class="text-danger"></span>
-                        <span th:if="${codeError} neq null" th:text="${codeError}" class="text-danger"></span>
+                            <span th:text="*{code}"></span>
+
                         </div>
                        </div>
                        <div class="mb-3">
@@ -36,7 +38,7 @@
                          <p class="mb-1"></p>
                         <div class="col-md-7">
                        <input class="form-control" type="text" th:field="*{name}" th:errorclass="err" id="name">
-                        <span th:errors="*{name}" class="text-danger"></span>
+                       <span th:errors="*{name}" class="text-danger"></span>
                         </div>
                         </div>
                       <div class="mb-3">

@@ -1,8 +1,5 @@
 package com.techacademy.controller;
 
-import java.util.List;
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -113,42 +110,22 @@ public class EmployeeController {
     @PostMapping(value = "/{code}/update")
     public String update(@PathVariable("code") String code,@Validated Employee employee, BindingResult res, Model model) {
         model.addAttribute("employee", employeeService.findByCode(code));
+        if ("".equals(employee.getName())) {
+            // 氏名が空白だった場合
+            model.addAttribute(ErrorMessage.getErrorName(ErrorKinds.BLANK_ERROR),
+                    ErrorMessage.getErrorValue(ErrorKinds.BLANK_ERROR));
 
+            return edit(employee.getCode(),employee,model);
 
-
-
-        // パスワード空白チェック
-        /*
-         * エンティティ側の入力チェックでも実装は行えるが、更新の方でパスワードが空白でもチェックエラーを出さずに
-         * 更新出来る仕様となっているため上記を考慮した場合に別でエラーメッセージを出す方法が簡単だと判断
-         */
-
-
-
+        }
         // 入力チェック
         if (res.hasErrors()) {
-            return edit(employee.getCode(),employee,model);
+            return "employees/update";
+
         }
 
-        // 論理削除を行った従業員番号を指定すると例外となるためtry~catchで対応
-        // (findByIdでは削除フラグがTRUEのデータが取得出来ないため)
-        try {
-            ErrorKinds result = employeeService.update(employee);
-
-        if (ErrorMessage.contains(result)) {
-                model.addAttribute(ErrorMessage.getErrorName(result), ErrorMessage.getErrorValue(result));
-            return edit(employee.getCode(),employee,model);
+      return "employees/update";
         }
-
-        } catch (DataIntegrityViolationException e) {
-            model.addAttribute(ErrorMessage.getErrorName(ErrorKinds.DUPLICATE_EXCEPTION_ERROR),
-                    ErrorMessage.getErrorValue(ErrorKinds.DUPLICATE_EXCEPTION_ERROR));
-            return edit(employee.getCode(),employee,model);
-        }
-
-            return "redirect:/employees";
-        }
-
 
     // 従業員削除処理
     @PostMapping(value = "/{code}/delete")

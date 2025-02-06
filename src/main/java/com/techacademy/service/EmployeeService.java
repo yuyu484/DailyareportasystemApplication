@@ -54,7 +54,9 @@ public class EmployeeService {
 
 
     // 更新（追加）を行なう
+
     @Transactional
+
     public ErrorKinds update(Employee employee) {
         Employee emp = findByCode(employee.getCode());
         if ("".equals(employee.getPassword())) {
