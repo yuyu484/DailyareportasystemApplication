@@ -109,6 +109,11 @@ public class EmployeeController {
     // 従業員更新処理
     @PostMapping(value = "/{code}/update")
     public String update(@PathVariable("code") String code,@Validated Employee employee, BindingResult res, Model model) {
+        // 入力チェック
+        if (res.hasErrors()) {
+            return "employees/update";
+
+        }
         model.addAttribute("employee", employeeService.findByCode(code));
         if ("".equals(employee.getName())) {
             // 氏名が空白だった場合
@@ -116,16 +121,12 @@ public class EmployeeController {
                     ErrorMessage.getErrorValue(ErrorKinds.BLANK_ERROR));
 
             return edit(employee.getCode(),employee,model);
-
         }
-        // 入力チェック
-        if (res.hasErrors()) {
+
             return "employees/update";
-
         }
 
-      return "employees/update";
-        }
+
 
     // 従業員削除処理
     @PostMapping(value = "/{code}/delete")
