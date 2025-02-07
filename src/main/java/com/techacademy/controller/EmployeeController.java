@@ -130,7 +130,7 @@ public class EmployeeController {
             return edit(employee.getCode(),employee,model);
         }
 
-            return "employees/update";
+            return "redirect:/employees";
         }
 
 
