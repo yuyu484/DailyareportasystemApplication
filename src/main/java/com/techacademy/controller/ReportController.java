@@ -53,7 +53,7 @@ public class ReportController {
     public String add(@Validated Report report, BindingResult res, Model model, @AuthenticationPrincipal UserDetail userDetail) {
      // 入力チェック
         if (res.hasErrors()) {
-            return create(report, model, null);
+            return create(report, model, userDetail);
          }
         ErrorKinds result = reportService.save(report, userDetail);
 
@@ -80,14 +80,14 @@ public class ReportController {
         // 日報更新処理
         @PostMapping(value = "/{id}/update")
         public String update(@PathVariable("id") String id,@Validated Report report, BindingResult res, Model model) {
+
             // 入力チェック
             if (res.hasErrors()) {
                 model.addAttribute("report",report);
                 return "reports/update";
-
             }
-
-            model.addAttribute("report", reportService.findById(null));
+           int id2 = Integer.parseInt(id);
+            model.addAttribute("report", reportService.findById(id2));
             if ("".equals(report.getContent())) {
                 // 内容が空白だった場合
                 model.addAttribute(ErrorMessage.getErrorName(ErrorKinds.BLANK_ERROR),

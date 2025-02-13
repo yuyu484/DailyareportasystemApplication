@@ -19,7 +19,7 @@ import jakarta.validation.constraints.NotEmpty;
 
 import lombok.Data;
 
-
+@Data
 @Entity
 @Table(name = "employees")
 @SQLRestriction("delete_flg = false")
