@@ -8,6 +8,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.techacademy.entity.Employee;
+import com.techacademy.entity.Report;
+import com.techacademy.entity.Employee;
 import com.techacademy.repository.EmployeeRepository;
 
 @Service

@@ -2,7 +2,6 @@ package com.techacademy.controller;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,8 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.techacademy.constants.ErrorKinds;
 import com.techacademy.constants.ErrorMessage;
-import com.techacademy.entity.Employee;
 import com.techacademy.entity.Report;
+import com.techacademy.entity.Employee;
 import com.techacademy.service.ReportService;
 import com.techacademy.service.UserDetail;
 
@@ -32,52 +31,48 @@ public class ReportController {
         }
 
     /** 一覧画面を表示 */
-    @GetMapping("/list")
-    public String getList(Model model) {
+    @GetMapping
+    public String list(Model model) {
         // 全件検索結果をModelに登録
-        model.addAttribute("reportlist", reportService.getReportList());
+        model.addAttribute("listSize", reportService.findAll().size());
+        model.addAttribute("reportList", reportService.findAll());
         // user/list.htmlに画面遷移
         return "reports/list";
     }
 
         // 日報新規登録画面
-        @GetMapping(value = "/add")
-        public String create(@ModelAttribute Report report) {
+    @GetMapping(value = "/add")
+    public String create(Report report, Model model, @AuthenticationPrincipal UserDetail userDetail) {
 
-            return "reports/new";
-        }
+        report.setEmployee(userDetail.getEmployee());
+        return "reports/new";
+    }
 
         // 日報新規登録処理
-        @PostMapping(value = "/add")
-        public String add(@Validated Report report, BindingResult res, Model model) {
-
-            if ("".equals(report.getreportDate())) {
-                // パスワードが空白だった場合
-                model.addAttribute(ErrorMessage.getErrorName(ErrorKinds.BLANK_ERROR),
-                        ErrorMessage.getErrorValue(ErrorKinds.BLANK_ERROR));
-
-                return create(report);
+    @PostMapping(value = "/add")
+    public String add(@Validated Report report, BindingResult res, Model model, @AuthenticationPrincipal UserDetail userDetail) {
+     // 入力チェック
+        if (res.hasErrors()) {
+            return create(report, model, null);
          }
+        ErrorKinds result = reportService.save(report, userDetail);
 
-         // 入力チェック
-            if (res.hasErrors()) {
-            return create(report);
-         }
-            return "redirect:/reports";
-         }
+
+         return "redirect:/reports";
+     }
 
         // 日報詳細画面
         @GetMapping(value = "/{id}/")
         public String detail(@PathVariable("id") Integer id, Model model) {
 
-            model.addAttribute("report", reportService.findById());
+            model.addAttribute("report", reportService.findById(id));
             return "reports/detail";
         }
 
         // 日報更新画面
         @GetMapping(value = "/{id}/update")
         public String edit(@PathVariable("id") Integer integer,@ModelAttribute Report report,Model model) {
-            model.addAttribute("report", reportService.findById());
+            model.addAttribute("report", reportService.findById(integer));
 
             return "reports/update";
         }
@@ -92,9 +87,9 @@ public class ReportController {
 
             }
 
-            model.addAttribute("report", reportService.findById());
-            if ("".equals(report.getName())) {
-                // 氏名が空白だった場合
+            model.addAttribute("report", reportService.findById(null));
+            if ("".equals(report.getContent())) {
+                // 内容が空白だった場合
                 model.addAttribute(ErrorMessage.getErrorName(ErrorKinds.BLANK_ERROR),
                         ErrorMessage.getErrorValue(ErrorKinds.BLANK_ERROR));
 

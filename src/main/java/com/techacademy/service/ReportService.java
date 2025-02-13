@@ -21,38 +21,59 @@ import org.springframework.transaction.annotation.Transactional;
 public class ReportService {
 
     private final ReportRepository reportRepository;
-    private final PasswordEncoder passwordEncoder;
 
-    public ReportService(ReportRepository reportRepository, PasswordEncoder passwordEncoder) {
+
+    public ReportService(ReportRepository reportRepository) {
         this.reportRepository = reportRepository;
-        this.passwordEncoder = passwordEncoder;
     }
 
-    /** 全件を検索して返す */
-    public List<Report> getUserList() {
-        // リポジトリのfindAllメソッドを呼び出す
-        return reportRepository.findAll();
 
+    // 従業員保存
+    @Transactional
+    public ErrorKinds save(Report report,UserDetail userDetail) {
+     // 社員番号（ログイン中の従業員の社員番号
+        report.setEmployee(userDetail.getEmployee());
+
+        report.setDeleteFlg(false);
+
+        LocalDateTime now = LocalDateTime.now();
+        report.setCreatedAt(now);
+        report.setUpdatedAt(now);
+
+        reportRepository.save(report);
+        return ErrorKinds.SUCCESS;
     }
 
-    /** 全件を検索して返す */
-    public List<Report> getReportList() {
-        // リポジトリのfindAllメソッドを呼び出す
-        return reportRepository.findAll();
 
+    // 従業員一覧表示処理
+    public List<Report> findAll() {
+        return reportRepository.findAll();
     }
 
-    /** 全件を検索して返す */
-    public List<Report> findById() {
-        // リポジトリのfindAllメソッドを呼び出す
-        return reportRepository.findAll();
-
+    // 1件を検索
+    public Report findById(Integer id) {
+        // findByIdで検索
+        Optional<Report> option = reportRepository.findById(id);
+        // 取得できなかった場合はnullを返す
+        Report report = option.orElse(null);
+        return report;
     }
 
-    /** 全件を検索して返す
-     * @param report */
-    public List<Report> update(Report report) {
-        // リポジトリのfindAllメソッドを呼び出す
-        return reportRepository.findAll();
+
+    // 更新（追加）を行なう
+
+    @Transactional
+    public ErrorKinds update(Report report) {
+        Report rep = findById(report.getId());
+
+        report.setTitle(rep.getTitle());
+        report.setDeleteFlg(false);
+
+        LocalDateTime now = LocalDateTime.now();
+        report.setCreatedAt(rep.getCreatedAt());
+        report.setUpdatedAt(now);
+
+        reportRepository.save(report);
+        return ErrorKinds.SUCCESS;
     }
 }

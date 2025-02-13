@@ -5,14 +5,15 @@ import java.time.LocalDate;
 
 import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.validator.constraints.Length;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.Temporal;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.persistence.ManyToOne;
@@ -31,25 +32,23 @@ import lombok.NoArgsConstructor;
 @SQLRestriction("delete_flg = false")
 public class Report {
 
-    // ID
+    /** 主キー。自動生成 */
     @Id
-    @Column(length = 600)
-    @NotEmpty
-    @Length(max = 600)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-
-    // 名前
-    @Column(length = 20, nullable = false)
-    @NotEmpty
-    @Length(max = 20)
-    private String name;
 
     // 日付
     @NotNull
     @Column(nullable = false)
-    private LocalDate getreportDate;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private LocalDate reportDate;
 
+    // タイトル
+    @Column(length = 100, nullable=false)
+    @NotEmpty
+    @Length(max=100)
+    private String title;
 
     // 内容
     @Column(length = 600,columnDefinition="LONGTEXT", nullable=false)
@@ -73,11 +72,6 @@ public class Report {
     // 更新日時
     @Column(nullable = false)
     private LocalDateTime updatedAt;
-
-    public Object getreportDate() {
-        // TODO 自動生成されたメソッド・スタブ
-        return null;
-    }
 
 }
 
