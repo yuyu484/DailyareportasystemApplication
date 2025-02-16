@@ -86,6 +86,13 @@ public class ReportController {
                 model.addAttribute("report",report);
                 return "reports/update";
             }
+            // reportServiceの更新処理を呼び出し
+            ErrorKinds result = reportService.update(report);
+            if (ErrorMessage.contains(result)) {
+                model.addAttribute(ErrorMessage.getErrorName(result), ErrorMessage.getErrorValue(result));
+                return "report/update";
+            }
+
            int id2 = Integer.parseInt(id);
             model.addAttribute("report", reportService.findById(id2));
             if ("".equals(report.getContent())) {
@@ -98,5 +105,24 @@ public class ReportController {
 
                 return "redirect:/reports";
             }
+
+        // 日報削除処理
+        @PostMapping(value = "/{id}/delete")
+        public String delete(@PathVariable("id") int id2, @AuthenticationPrincipal UserDetail userDetail, Model model) {
+
+            ErrorKinds result = reportService.delete(id2);
+
+            if (ErrorMessage.contains(result)) {
+                String id = null;
+                int id21 = Integer.parseInt(id);
+                model.addAttribute(ErrorMessage.getErrorName(result), ErrorMessage.getErrorValue(result));
+                model.addAttribute("report", reportService.findById(id21));
+                return detail(id21, model);
+            }
+
+            return "redirect:/reports";
+        }
+
 }
+
 

@@ -16,7 +16,7 @@ import com.techacademy.entity.Report;
 import com.techacademy.repository.EmployeeRepository;
 import com.techacademy.repository.ReportRepository;
 import org.springframework.transaction.annotation.Transactional;
-
+import com.techacademy.service.UserDetail;
 @Service
 public class ReportService {
 
@@ -28,7 +28,7 @@ public class ReportService {
     }
 
 
-    // 従業員保存
+    // 日報保存
     @Transactional
     public ErrorKinds save(Report report,UserDetail userDetail) {
      // 社員番号（ログイン中の従業員の社員番号
@@ -44,8 +44,16 @@ public class ReportService {
         return ErrorKinds.SUCCESS;
     }
 
+    // 日報一覧表示処理（ログインユーザーのみ）
+    public List<Report> findByEmployee(UserDetail userDetail) {
+        return reportRepository.findByEmployee(userDetail.getEmployee());
+    }
+    // 日報一覧表示処理（従業員削除用）
+    public List<Report> findByEmployee(Employee employee) {
+        return reportRepository.findByEmployee(employee);
+    }
 
-    // 従業員一覧表示処理
+    // 日報一覧表示処理
     public List<Report> findAll() {
         return reportRepository.findAll();
     }
@@ -66,14 +74,25 @@ public class ReportService {
     public ErrorKinds update(Report report) {
         Report rep = findById(report.getId());
 
-        report.setTitle(rep.getTitle());
-        report.setDeleteFlg(false);
+        rep.setTitle(report.getTitle());
+        rep.setDeleteFlg(false);
 
         LocalDateTime now = LocalDateTime.now();
-        report.setCreatedAt(rep.getCreatedAt());
-        report.setUpdatedAt(now);
+        rep.setUpdatedAt(now);
 
-        reportRepository.save(report);
+        reportRepository.save(rep);
         return ErrorKinds.SUCCESS;
     }
+
+    // 日報削除
+    @Transactional
+    public ErrorKinds delete(int id2) {
+        Report report = findById(id2);
+        LocalDateTime now = LocalDateTime.now();
+        report.setUpdatedAt(now);
+        report.setDeleteFlg(true);
+
+        return ErrorKinds.SUCCESS;
+       }
 }
+

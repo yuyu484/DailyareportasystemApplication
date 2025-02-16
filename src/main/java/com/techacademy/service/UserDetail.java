@@ -9,6 +9,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import com.techacademy.entity.Report;
 import com.techacademy.entity.Employee;
+import com.techacademy.service.ReportService;
+import com.techacademy.service.UserDetail;
 
 public class UserDetail implements UserDetails {
     private static final long serialVersionUID = 1L;
@@ -27,6 +29,12 @@ public class UserDetail implements UserDetails {
     public Employee getEmployee() {
         return employee;
     }
+
+    public Report getReport() {
+        // TODO 自動生成されたメソッド・スタブ
+       return getReport();
+    }
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -65,5 +73,6 @@ public class UserDetail implements UserDetails {
     public boolean isEnabled() {
         // 従業員が有効であればtrueを返す
         return true;
+
     }
 }

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import com.techacademy.constants.ErrorKinds;
 import com.techacademy.constants.ErrorMessage;
 import com.techacademy.entity.Employee;
+import com.techacademy.entity.Report;
 import com.techacademy.repository.EmployeeRepository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,11 +20,13 @@ import org.springframework.transaction.annotation.Transactional;
 public class EmployeeService {
 
     private final EmployeeRepository employeeRepository;
+    private final ReportService reportService;
     private final PasswordEncoder passwordEncoder;
 
-    public EmployeeService(EmployeeRepository employeeRepository, PasswordEncoder passwordEncoder) {
+    public EmployeeService(EmployeeRepository employeeRepository, PasswordEncoder passwordEncoder,ReportService reportService) {
         this.employeeRepository = employeeRepository;
         this.passwordEncoder = passwordEncoder;
+        this.reportService = reportService;
     }
 
 
@@ -51,7 +54,6 @@ public class EmployeeService {
         employeeRepository.save(employee);
         return ErrorKinds.SUCCESS;
     }
-
 
     // 更新（追加）を行なう
 
@@ -81,8 +83,6 @@ public class EmployeeService {
         return ErrorKinds.SUCCESS;
     }
 
-
-
     // 従業員削除
     @Transactional
     public ErrorKinds delete(String code, UserDetail userDetail) {
@@ -96,6 +96,17 @@ public class EmployeeService {
         LocalDateTime now = LocalDateTime.now();
         employee.setUpdatedAt(now);
         employee.setDeleteFlg(true);
+
+        // 削除対象の従業員（employee）に紐づいている、日報のリスト（reportList）を取得
+        List<Report> reportList = reportService.findByEmployee(employee);
+
+        // 日報のリスト（reportList）を拡張for文を使って繰り返し
+        for (Report report : reportList) {
+            // 日報（report）のIDを指定して、日報情報を削除
+            reportService.delete(report.getId());
+        }
+
+        /* 削除対象の従業員に紐づいている日報情報の削除：ここまで */
 
 
 
