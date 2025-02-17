@@ -30,11 +30,6 @@ public class UserDetail implements UserDetails {
         return employee;
     }
 
-    public Report getReport() {
-        // TODO 自動生成されたメソッド・スタブ
-       return getReport();
-    }
-
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -75,4 +70,5 @@ public class UserDetail implements UserDetails {
         return true;
 
     }
+
 }

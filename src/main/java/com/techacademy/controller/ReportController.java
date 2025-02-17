@@ -79,7 +79,7 @@ public class ReportController {
 
         // 日報更新処理
         @PostMapping(value = "/{id}/update")
-        public String update(@PathVariable("id") String id,@Validated Report report, BindingResult res, Model model) {
+        public String update(@PathVariable("id") String id,@Validated Report report, BindingResult res, Model model, @AuthenticationPrincipal UserDetail userDetail) {
 
             // 入力チェック
             if (res.hasErrors()) {
@@ -87,7 +87,7 @@ public class ReportController {
                 return "reports/update";
             }
             // reportServiceの更新処理を呼び出し
-            ErrorKinds result = reportService.update(report);
+            ErrorKinds result = reportService.update(report,userDetail);
             if (ErrorMessage.contains(result)) {
                 model.addAttribute(ErrorMessage.getErrorName(result), ErrorMessage.getErrorValue(result));
                 return "report/update";

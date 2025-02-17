@@ -1,5 +1,6 @@
 package com.techacademy.service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -31,9 +32,14 @@ public class ReportService {
     // 日報保存
     @Transactional
     public ErrorKinds save(Report report,UserDetail userDetail) {
-     // 社員番号（ログイン中の従業員の社員番号
-        report.setEmployee(userDetail.getEmployee());
+        boolean check = reportRepository.existsByEmployeeAndReportDate(userDetail.getEmployee(),report.getReportDate());
+        if (check == true) {
+            return ErrorKinds.DUPLICATE_ERROR;
+        }
 
+
+    // 社員番号（ログイン中の従業員の社員番号
+        report.setEmployee(userDetail.getEmployee());
         report.setDeleteFlg(false);
 
         LocalDateTime now = LocalDateTime.now();
@@ -71,7 +77,18 @@ public class ReportService {
     // 更新（追加）を行なう
 
     @Transactional
-    public ErrorKinds update(Report report) {
+    public ErrorKinds update(Report report,UserDetail userDetail) {
+
+     // 元々の日報を取得する
+        Report report_org = findById(report.getId());
+        if (report.getReportDate() != report_org.getReportDate()) {
+            boolean check = reportRepository.existsByEmployeeAndReportDate(userDetail.getEmployee(),report.getReportDate());
+            if (check == true) {
+            return ErrorKinds.DUPLICATE_ERROR;
+            }
+
+        }
+
         Report rep = findById(report.getId());
 
         rep.setTitle(report.getTitle());
@@ -93,6 +110,5 @@ public class ReportService {
         report.setDeleteFlg(true);
 
         return ErrorKinds.SUCCESS;
-       }
+    }
 }
-
