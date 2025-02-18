@@ -34,7 +34,7 @@ public class ReportService {
     public ErrorKinds save(Report report,UserDetail userDetail) {
         boolean check = reportRepository.existsByEmployeeAndReportDate(userDetail.getEmployee(),report.getReportDate());
         if (check == true) {
-            return ErrorKinds.DUPLICATE_ERROR;
+            return ErrorKinds.DATECHECK_ERROR;
         }
 
 
@@ -84,7 +84,7 @@ public class ReportService {
         if (report.getReportDate() != report_org.getReportDate()) {
             boolean check = reportRepository.existsByEmployeeAndReportDate(userDetail.getEmployee(),report.getReportDate());
             if (check == true) {
-            return ErrorKinds.DUPLICATE_ERROR;
+            return ErrorKinds.DATECHECK_ERROR;
             }
 
         }

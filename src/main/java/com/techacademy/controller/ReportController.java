@@ -44,6 +44,8 @@ public class ReportController {
     @GetMapping(value = "/add")
     public String create(Report report, Model model, @AuthenticationPrincipal UserDetail userDetail) {
 
+        // パスパラメータで受け取った値をmodelに登録
+        model.addAttribute("既に登録されている日付です");
         report.setEmployee(userDetail.getEmployee());
         return "reports/new";
     }
@@ -56,15 +58,24 @@ public class ReportController {
             return create(report, model, userDetail);
          }
         ErrorKinds result = reportService.save(report, userDetail);
+System.out.println(result);
+     // 以下追記
+        if (ErrorMessage.contains(result)) {
+            model.addAttribute(ErrorMessage.getErrorName(result), ErrorMessage.getErrorValue(result));
+            System.out.println(ErrorMessage.getErrorName(result));
+            System.out.println(ErrorMessage.getErrorValue(result));
+            return create(report,model,userDetail);
+        }
 
+        return  "redirect:/reports";
 
-         return "redirect:/reports";
-     }
+    }
 
         // 日報詳細画面
         @GetMapping(value = "/{id}/")
         public String detail(@PathVariable("id") Integer id, Model model) {
-
+         // パスパラメータで受け取った値をmodelに登録
+            model.addAttribute("既に登録されている日付です");
             model.addAttribute("report", reportService.findById(id));
             return "reports/detail";
         }
@@ -74,27 +85,30 @@ public class ReportController {
         public String edit(@PathVariable("id") Integer integer,@ModelAttribute Report report,Model model) {
             model.addAttribute("report", reportService.findById(integer));
 
+
+
             return "reports/update";
         }
 
         // 日報更新処理
         @PostMapping(value = "/{id}/update")
-        public String update(@PathVariable("id") String id,@Validated Report report, BindingResult res, Model model, @AuthenticationPrincipal UserDetail userDetail) {
+        public String update(@PathVariable("id") Integer integer,@Validated Report report, BindingResult res, Model model, @AuthenticationPrincipal UserDetail userDetail) {
 
             // 入力チェック
             if (res.hasErrors()) {
                 model.addAttribute("report",report);
-                return "reports/update";
+
+                return edit(integer,report,model);
+
             }
             // reportServiceの更新処理を呼び出し
             ErrorKinds result = reportService.update(report,userDetail);
             if (ErrorMessage.contains(result)) {
                 model.addAttribute(ErrorMessage.getErrorName(result), ErrorMessage.getErrorValue(result));
-                return "report/update";
+                return edit(integer,report,model);
             }
 
-           int id2 = Integer.parseInt(id);
-            model.addAttribute("report", reportService.findById(id2));
+
             if ("".equals(report.getContent())) {
                 // 内容が空白だった場合
                 model.addAttribute(ErrorMessage.getErrorName(ErrorKinds.BLANK_ERROR),
