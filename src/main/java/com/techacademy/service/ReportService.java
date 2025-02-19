@@ -103,8 +103,8 @@ public class ReportService {
 
     // 日報削除
     @Transactional
-    public ErrorKinds delete(int id2) {
-        Report report = findById(id2);
+    public ErrorKinds delete(int id) {
+        Report report = findById(id);
         LocalDateTime now = LocalDateTime.now();
         report.setUpdatedAt(now);
         report.setDeleteFlg(true);

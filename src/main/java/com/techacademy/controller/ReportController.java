@@ -122,16 +122,14 @@ System.out.println(result);
 
         // 日報削除処理
         @PostMapping(value = "/{id}/delete")
-        public String delete(@PathVariable("id") int id2, @AuthenticationPrincipal UserDetail userDetail, Model model) {
+        public String delete(@PathVariable("id") int id, @AuthenticationPrincipal UserDetail userDetail, Model model) {
 
-            ErrorKinds result = reportService.delete(id2);
+            ErrorKinds result = reportService.delete(id);
 
             if (ErrorMessage.contains(result)) {
-                String id = null;
-                int id21 = Integer.parseInt(id);
                 model.addAttribute(ErrorMessage.getErrorName(result), ErrorMessage.getErrorValue(result));
-                model.addAttribute("report", reportService.findById(id21));
-                return detail(id21, model);
+                model.addAttribute("report", reportService.findById(id));
+                return detail(id, model);
             }
 
             return "redirect:/reports";
