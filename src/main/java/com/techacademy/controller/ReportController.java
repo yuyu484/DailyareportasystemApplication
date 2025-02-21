@@ -32,10 +32,17 @@ public class ReportController {
 
     /** 一覧画面を表示 */
     @GetMapping
-    public String list(Model model) {
-        // 全件検索結果をModelに登録
-        model.addAttribute("listSize", reportService.findAll().size());
-        model.addAttribute("reportList", reportService.findAll());
+    public String list(Model model,@AuthenticationPrincipal UserDetail userDetail) {
+        if(Employee.Role.ADMIN.equals(userDetail.getEmployee().getRole())) {
+            // 全件検索結果をModelに登録
+            model.addAttribute("listSize", reportService.findAll().size());
+            model.addAttribute("reportList", reportService.findAll());
+        }
+        else {
+            model.addAttribute("listSize", reportService.findByEmployee(userDetail.getEmployee()).size());
+            model.addAttribute("reportList", reportService.findByEmployee(userDetail.getEmployee()));
+
+        }
         // user/list.htmlに画面遷移
         return "reports/list";
     }
@@ -108,7 +115,7 @@ public class ReportController {
         ErrorKinds result = reportService.update(report,userDetail);
         if (ErrorMessage.contains(result)) {
             model.addAttribute(ErrorMessage.getErrorName(result), ErrorMessage.getErrorValue(result));
-            return edit(integer,report,model);
+            return edit(null,report,model);
         }
 
         return "redirect:/reports";
