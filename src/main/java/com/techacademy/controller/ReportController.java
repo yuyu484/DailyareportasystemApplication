@@ -28,7 +28,7 @@ public class ReportController {
     @Autowired
     public ReportController(ReportService reportService) {
         this.reportService = reportService;
-        }
+    }
 
     /** 一覧画面を表示 */
     @GetMapping
@@ -40,7 +40,7 @@ public class ReportController {
         return "reports/list";
     }
 
-        // 日報新規登録画面
+    // 日報新規登録画面
     @GetMapping(value = "/add")
     public String create(Report report, Model model, @AuthenticationPrincipal UserDetail userDetail) {
 
@@ -50,16 +50,16 @@ public class ReportController {
         return "reports/new";
     }
 
-        // 日報新規登録処理
+    // 日報新規登録処理
     @PostMapping(value = "/add")
     public String add(@Validated Report report, BindingResult res, Model model, @AuthenticationPrincipal UserDetail userDetail) {
-     // 入力チェック
+        // 入力チェック
         if (res.hasErrors()) {
             return create(report, model, userDetail);
-         }
+        }
         ErrorKinds result = reportService.save(report, userDetail);
-System.out.println(result);
-     // 以下追記
+        System.out.println(result);
+        // 以下追記
         if (ErrorMessage.contains(result)) {
             model.addAttribute(ErrorMessage.getErrorName(result), ErrorMessage.getErrorValue(result));
             System.out.println(ErrorMessage.getErrorName(result));
@@ -71,71 +71,63 @@ System.out.println(result);
 
     }
 
-        // 日報詳細画面
-        @GetMapping(value = "/{id}/")
-        public String detail(@PathVariable("id") Integer id, Model model) {
-         // パスパラメータで受け取った値をmodelに登録
-            model.addAttribute("既に登録されている日付です");
-            model.addAttribute("report", reportService.findById(id));
-            return "reports/detail";
-        }
+    // 日報詳細画面
+    @GetMapping(value = "/{id}/")
+    public String detail(@PathVariable("id") Integer id, Model model) {
+        // パスパラメータで受け取った値をmodelに登録
+        model.addAttribute("既に登録されている日付です");
+        model.addAttribute("report", reportService.findById(id));
+        return "reports/detail";
+    }
 
-        // 日報更新画面
-        @GetMapping(value = "/{id}/update")
-        public String edit(@PathVariable("id") Integer integer,@ModelAttribute Report report,Model model) {
+    // 日報更新画面
+    @GetMapping(value = "/{id}/update")
+    public String edit(@PathVariable("id") Integer integer,@ModelAttribute Report report,Model model) {
+        if(integer != null) {
             model.addAttribute("report", reportService.findById(integer));
-
-
-
-            return "reports/update";
         }
 
-        // 日報更新処理
-        @PostMapping(value = "/{id}/update")
-        public String update(@PathVariable("id") Integer integer,@Validated Report report, BindingResult res, Model model, @AuthenticationPrincipal UserDetail userDetail) {
 
-            System.out.println("==========");
-            System.out.println(report);
-            // 入力チェック
-            if (res.hasErrors()) {
-                model.addAttribute("report",report);
+        return "reports/update";
+    }
 
-                return edit(integer,report,model);
+    // 日報更新処理
+    @PostMapping(value = "/{id}/update")
+    public String update(@PathVariable("id") Integer integer,@Validated Report report, BindingResult res, Model model, @AuthenticationPrincipal UserDetail userDetail) {
 
-            }
-            // reportServiceの更新処理を呼び出し
-            ErrorKinds result = reportService.update(report,userDetail);
-            if (ErrorMessage.contains(result)) {
-                model.addAttribute(ErrorMessage.getErrorName(result), ErrorMessage.getErrorValue(result));
-                return edit(integer,report,model);
-            }
+        System.out.println("==========");
+        System.out.println(report);
+        // 入力チェック
+        if (res.hasErrors()) {
+            model.addAttribute("report",report);
 
+            return edit(null,report,model);
 
-            if ("".equals(report.getContent())) {
-                // 内容が空白だった場合
-                model.addAttribute(ErrorMessage.getErrorName(ErrorKinds.BLANK_ERROR),
-                        ErrorMessage.getErrorValue(ErrorKinds.BLANK_ERROR));
-
-                return edit(report.getId(),report,model);
-            }
-
-                return "redirect:/reports";
-            }
-
-        // 日報削除処理
-        @PostMapping(value = "/{id}/delete")
-        public String delete(@PathVariable("id") int id, @AuthenticationPrincipal UserDetail userDetail, Model model) {
-
-            ErrorKinds result = reportService.delete(id);
-
-            if (ErrorMessage.contains(result)) {
-                model.addAttribute(ErrorMessage.getErrorName(result), ErrorMessage.getErrorValue(result));
-                model.addAttribute("report", reportService.findById(id));
-                return detail(id, model);
-            }
-
-            return "redirect:/reports";
         }
+        // reportServiceの更新処理を呼び出し
+        ErrorKinds result = reportService.update(report,userDetail);
+        if (ErrorMessage.contains(result)) {
+            model.addAttribute(ErrorMessage.getErrorName(result), ErrorMessage.getErrorValue(result));
+            return edit(integer,report,model);
+        }
+
+        return "redirect:/reports";
+    }
+
+    // 日報削除処理
+    @PostMapping(value = "/{id}/delete")
+    public String delete(@PathVariable("id") int id, @AuthenticationPrincipal UserDetail userDetail, Model model) {
+
+        ErrorKinds result = reportService.delete(id);
+
+        if (ErrorMessage.contains(result)) {
+            model.addAttribute(ErrorMessage.getErrorName(result), ErrorMessage.getErrorValue(result));
+            model.addAttribute("report", reportService.findById(id));
+            return detail(id, model);
+        }
+
+        return "redirect:/reports";
+    }
 
 }
 
