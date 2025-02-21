@@ -94,6 +94,8 @@ System.out.println(result);
         @PostMapping(value = "/{id}/update")
         public String update(@PathVariable("id") Integer integer,@Validated Report report, BindingResult res, Model model, @AuthenticationPrincipal UserDetail userDetail) {
 
+            System.out.println("==========");
+            System.out.println(report);
             // 入力チェック
             if (res.hasErrors()) {
                 model.addAttribute("report",report);

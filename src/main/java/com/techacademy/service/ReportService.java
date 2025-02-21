@@ -95,6 +95,7 @@ public class ReportService {
         rep.setDeleteFlg(false);
 
         LocalDateTime now = LocalDateTime.now();
+        report.setCreatedAt(now);
         rep.setUpdatedAt(now);
 
         reportRepository.save(rep);
