@@ -81,7 +81,7 @@ public class ReportService {
 
      // 元々の日報を取得する
         Report report_org = findById(report.getId());
-        if (report.getReportDate() != report_org.getReportDate()) {
+        if (report.getReportDate().equals(report_org.getReportDate())){
             boolean check = reportRepository.existsByEmployeeAndReportDate(userDetail.getEmployee(),report.getReportDate());
             if (check == true) {
             return ErrorKinds.DATECHECK_ERROR;
